@@ -23,5 +23,15 @@ namespace AsyncStateMachine {
             _stateController.AddEntryAction(function);
             return this;
         }
+
+        public StateConfiguration<TTrigger, TState> Permit(TTrigger trigger, TState newState) {
+            _stateController.AddTransition(trigger, newState);
+            return this;
+        }
+
+        public StateConfiguration<TTrigger, TState> Permit(TTrigger trigger, TState newState, Func<CancellationToken, Task<bool>> conditionFunction) {
+            _stateController.AddTransition(trigger, newState, conditionFunction);
+            return this;
+        }
     }
 }

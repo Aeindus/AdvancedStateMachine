@@ -9,18 +9,20 @@ namespace AsyncStateMachine {
         where TTrigger : struct
         where TState : struct {
 
-        private readonly Dictionary<TState, StateController<TTrigger, TState>> _stateConfigurations;
+        private readonly TState _initialState;
+        private readonly Dictionary<TState, StateController<TTrigger, TState>> _stateControllers;
 
 
-        public MachineConfiguration() {
-            _stateConfigurations = new Dictionary<TState, StateController<TTrigger, TState>>();
+        public MachineConfiguration(TState initialState) {
+            _initialState = initialState;
+            _stateControllers = new Dictionary<TState, StateController<TTrigger, TState>>();
         }
 
         private StateController<TTrigger, TState> GetStateController(TState state) {
-            if (!_stateConfigurations.TryGetValue(state, out var manager)) {
+            if (!_stateControllers.TryGetValue(state, out var manager)) {
 
                 manager = new StateController<TTrigger, TState>(state);
-                _stateConfigurations.Add(state, manager);
+                _stateControllers.Add(state, manager);
             }
 
             return manager;
@@ -33,7 +35,7 @@ namespace AsyncStateMachine {
         }
 
         public StateMachine<TTrigger, TState> Build() {
-            throw new NotImplementedException();
+            return new StateMachine<TTrigger, TState>(_initialState, _stateControllers);
         }
     }
 }

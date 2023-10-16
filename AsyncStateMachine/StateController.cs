@@ -26,7 +26,7 @@ namespace AsyncStateMachine {
             InternalAddTransition(trigger, new TriggerCondition<TState>(newState));
         }
 
-        public void AddTransition(TTrigger trigger, TState newState, Func<Task<bool>> checkFunction) {
+        public void AddTransition(TTrigger trigger, TState newState, Func<CancellationToken, Task<bool>> checkFunction) {
             InternalAddTransition(trigger, new TriggerCondition<TState>(newState, checkFunction));
         }
 
@@ -39,8 +39,20 @@ namespace AsyncStateMachine {
             triggerConditions.Add(condition);
         }
 
+        public async Task<TState?> GetNextState(TTrigger trigger, CancellationToken token) {
+            if (!_triggers.ContainsKey(trigger)) return null;
 
+            var conditions = _triggers[trigger];
 
+            foreach (var condition in conditions) {
+                var canTransition = await condition.CanTransition(token);
+
+                if (!canTransition) continue;
+                return condition.NewState;
+            }
+
+            return null;
+        }
 
         public async Task<TTrigger?> EnterAsync(Transition<TTrigger, TState> transition, CancellationToken actionToken) {
             if (_entryFunction != null)

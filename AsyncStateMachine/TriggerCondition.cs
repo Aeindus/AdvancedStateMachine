@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace AsyncStateMachine {
     public class TriggerCondition<TState> {
         private readonly TState _newState;
-        private Func<Task<bool>>? _checkFunction;
+        private Func<CancellationToken, Task<bool>>? _checkFunction;
 
         public TState NewState => _newState;
 
@@ -16,14 +16,14 @@ namespace AsyncStateMachine {
             _newState = newState;
         }
 
-        public TriggerCondition(TState newState, Func<Task<bool>> checkFunction) {
+        public TriggerCondition(TState newState, Func<CancellationToken, Task<bool>> checkFunction) {
             _newState = newState;
             _checkFunction = checkFunction;
         }
 
-        public async Task<bool> CanTransition() {
+        public async Task<bool> CanTransition(CancellationToken token) {
             if (_checkFunction == null) return true;
-            return await _checkFunction();
+            return await _checkFunction(token);
         }
     }
 }
