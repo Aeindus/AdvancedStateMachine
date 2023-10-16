@@ -6,22 +6,30 @@ using System.Threading.Tasks;
 
 namespace AsyncStateMachine {
     public class MachineConfiguration<TTrigger, TState>
-        where TTrigger : class
-        where TState : class {
+        where TTrigger : struct
+        where TState : struct {
 
-        private readonly List<StateConfiguration<TTrigger, TState>> _stateConfigurations =
-            new List<StateConfiguration<TTrigger, TState>>();
+        private readonly Dictionary<TState, StateController<TTrigger, TState>> _stateConfigurations;
 
 
         public MachineConfiguration() {
-
+            _stateConfigurations = new Dictionary<TState, StateController<TTrigger, TState>>();
         }
 
-        public StateConfiguration<TTrigger, TState> Configure(TState newState) {
-            var temp = new StateConfiguration<TTrigger, TState>(newState);
+        private StateController<TTrigger, TState> GetStateController(TState state) {
+            if (!_stateConfigurations.TryGetValue(state, out var manager)) {
 
-            _stateConfigurations.Add(temp);
-            return temp;
+                manager = new StateController<TTrigger, TState>(state);
+                _stateConfigurations.Add(state, manager);
+            }
+
+            return manager;
+        }
+
+
+        public StateConfiguration<TTrigger, TState> Configure(TState newState) {
+            var stateController = GetStateController(newState);
+            return new StateConfiguration<TTrigger, TState>(newState, stateController);
         }
 
         public StateMachine<TTrigger, TState> Build() {

@@ -1,22 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AsyncStateMachine {
-    public class TriggerCondition<TTrigger, TState> {
+    public class TriggerCondition<TState> {
+        private readonly TState _newState;
+        private Func<Task<bool>>? _checkFunction;
 
-    }
+        public TState NewState => _newState;
 
-    public class StateMangement<TTrigger, TState> {
-        public 
+        public TriggerCondition(TState newState) {
+            _newState = newState;
+        }
 
-    }
+        public TriggerCondition(TState newState, Func<Task<bool>> checkFunction) {
+            _newState = newState;
+            _checkFunction = checkFunction;
+        }
 
-    public class TriggerToStateTransition<TTrigger, TState> : Tuple<TriggerCondition<TTrigger, TState>, StateMangement<TTrigger, TState>> {
-        public TriggerToStateTransition(TriggerCondition<TTrigger, TState> item1, TState item2) :
-            base(item1, item2) {
+        public async Task<bool> CanTransition() {
+            if (_checkFunction == null) return true;
+            return await _checkFunction();
         }
     }
 }
