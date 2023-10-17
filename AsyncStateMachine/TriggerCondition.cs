@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsyncStateMachine {
+namespace AdvancedStateMachine {
     public class TriggerCondition<TState> {
         private readonly TState _newState;
         private Func<CancellationToken, Task<bool>>? _checkFunction;

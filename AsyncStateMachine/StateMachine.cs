@@ -1,6 +1,6 @@
-﻿using AsyncStateMachine.Exceptions;
+﻿using AdvancedStateMachine.Exceptions;
 
-namespace AsyncStateMachine {
+namespace AdvancedStateMachine {
     public class StateMachine<TTrigger, TState>
         where TTrigger : struct
         where TState : struct {

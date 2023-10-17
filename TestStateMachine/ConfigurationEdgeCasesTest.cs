@@ -65,6 +65,9 @@ namespace TestStateMachine {
             Assert.IsFalse(machine.IsRunning());
 
             Assert.IsTrue(await machine.Fire(Trigger.LoadData, CancellationToken.None));
+
+            Assert.IsTrue(machine.IsInState(State.Load));
+            Assert.IsFalse(machine.IsRunning());
         }
     }
 }

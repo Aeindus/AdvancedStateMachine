@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsyncStateMachine {
+namespace AdvancedStateMachine {
     public class Transition<TTrigger, TState> {
         private readonly TState _sourceState;
         private readonly TTrigger _trigger;

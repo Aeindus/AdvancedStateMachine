@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsyncStateMachine {
+namespace AdvancedStateMachine {
     public class StateConfiguration<TTrigger, TState>
         where TTrigger : struct
         where TState : struct {

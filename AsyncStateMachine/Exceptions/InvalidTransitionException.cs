@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsyncStateMachine.Exceptions {
+namespace AdvancedStateMachine.Exceptions {
     internal class InvalidTransitionException : Exception {
         public InvalidTransitionException() : base("Cannot transition") { }
     }

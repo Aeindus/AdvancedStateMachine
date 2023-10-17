@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsyncStateMachine {
+namespace AdvancedStateMachine {
     public class PatternExpresion<T> {
         private readonly List<T> _pattern;
         private int _currentState = 0;

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AsyncStateMachine\AsyncStateMachine.csproj" />
+    <ProjectReference Include="..\AsyncStateMachine\AdvancedStateMachine.csproj" />
   </ItemGroup>
 
 </Project>
