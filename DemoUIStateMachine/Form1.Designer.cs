@@ -31,6 +31,8 @@
             // 
             // cmbInput1
             // 
+            cmbInput1.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cmbInput1.AutoCompleteSource = AutoCompleteSource.ListItems;
             cmbInput1.FormattingEnabled = true;
             cmbInput1.Location = new Point(58, 89);
             cmbInput1.Name = "cmbInput1";
@@ -50,10 +52,11 @@
             // 
             btnSearch.Location = new Point(292, 135);
             btnSearch.Name = "btnSearch";
-            btnSearch.Size = new Size(75, 23);
+            btnSearch.Size = new Size(126, 42);
             btnSearch.TabIndex = 2;
             btnSearch.Text = "Search";
             btnSearch.UseVisualStyleBackColor = true;
+            btnSearch.Click += btnSearch_Click;
             // 
             // cmbResult
             // 
@@ -67,7 +70,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(502, 385);
             Controls.Add(cmbResult);
             Controls.Add(btnSearch);
             Controls.Add(cmbInput2);

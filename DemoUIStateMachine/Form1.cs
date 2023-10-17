@@ -15,13 +15,19 @@ namespace DemoUIStateMachine {
             Loading,
             Loaded,
 
-            Input1Changed
+            Input1Changing,
+
+            Searching
         }
         enum Trigger {
             Load,
             FinishLoad,
 
-            ChangeInput1
+            ChangeInput1,
+            FinishChangeInput1,
+
+            StartSearch,
+            FinishSearch
         }
 
         class Model {
@@ -39,11 +45,20 @@ namespace DemoUIStateMachine {
         public Form1() {
             InitializeComponent();
             BindControls();
+            CreateUIMachine();
         }
 
         private void BindControls() {
+            cmbInput1.ValueMember = "Id";
+            cmbInput1.DisplayMember = "Name";
             cmbInput1.DataSource = _input1Source;
+
+            cmbInput2.ValueMember = "Id";
+            cmbInput2.DisplayMember = "Name";
             cmbInput2.DataSource = _input2Source;
+
+            cmbResult.ValueMember = "Id";
+            cmbResult.DisplayMember = "Name";
             cmbResult.DataSource = _resultSource;
         }
 
@@ -58,10 +73,16 @@ namespace DemoUIStateMachine {
                 .Permit(Trigger.FinishLoad, State.Loaded);
 
             config.Configure(State.Loaded)
-                .Permit(Trigger.ChangeInput1, State.Input1Changed);
+                .Permit(Trigger.ChangeInput1, State.Input1Changing)
+                .Permit(Trigger.StartSearch, State.Searching);
 
-            config.Configure(State.Input1Changed)
-                .OnEntryAsync(StateInput1Changed);
+            config.Configure(State.Input1Changing)
+                .OnEntryAsync(StateInput1Changed)
+                .Permit(Trigger.FinishChangeInput1, State.Loaded);
+
+            config.Configure(State.Searching)
+                .OnEntryAsync(StateSearching)
+                .Permit(Trigger.FinishSearch, State.Loaded);
 
             _machine = config.Build();
         }
@@ -82,7 +103,20 @@ namespace DemoUIStateMachine {
                     break;
                 }
 
-                case State.Input1Changed: {
+                case State.Input1Changing: {
+                    if (viewState == ViewState.Lock) {
+                        cmbInput1.Enabled = false;
+                        cmbInput2.Enabled = false;
+                        btnSearch.Enabled = false;
+                    } else {
+                        cmbInput1.Enabled = true;
+                        cmbInput2.Enabled = true;
+                        btnSearch.Enabled = true;
+                    }
+                    break;
+                }
+
+                case State.Searching: {
                     if (viewState == ViewState.Lock) {
                         cmbInput1.Enabled = false;
                         cmbInput2.Enabled = false;
@@ -91,6 +125,7 @@ namespace DemoUIStateMachine {
                     } else {
                         cmbInput1.Enabled = true;
                         cmbInput2.Enabled = true;
+                        cmbResult.Enabled = true;
                         btnSearch.Enabled = true;
                     }
                     break;
@@ -126,18 +161,38 @@ namespace DemoUIStateMachine {
 
             UpdateView(transition.SourceState, transition.DestinationState, ViewState.Unlock);
 
-            return null;
+            return Trigger.FinishChangeInput1;
         }
+        private async Task<Trigger?> StateSearching(Transition<Trigger, State> transition, CancellationToken token) {
+            UpdateView(transition.SourceState, transition.DestinationState, ViewState.Lock);
+
+            _resultSource.Clear();
+
+            var item1 = (Model)cmbInput1.SelectedItem;
+            var item2 = (Model)cmbInput2.SelectedItem;
+
+            if (item1 != null && item2 != null) {
+                var data = await SearchData(item1, item2);
+
+                foreach (var item in data)
+                    _resultSource.Add(item);
+            }
+
+            UpdateView(transition.SourceState, transition.DestinationState, ViewState.Unlock);
+
+            return Trigger.FinishSearch;
+        }
+
 
         private async Task<List<Model>> GetInputData() {
             await Task.Delay(1000);
             return new List<Model>() {
-                new Model(){Id=1,Name="a" },
-                new Model(){Id=2,Name="b" },
-                new Model(){Id=3,Name="c" },
-                new Model(){Id=4,Name="d" },
-                new Model(){Id=5,Name="e" },
-                new Model(){Id=6,Name="f" },
+                new Model(){Id=1,Name="acasa" },
+                new Model(){Id=2,Name="basket" },
+                new Model(){Id=3,Name="copac" },
+                new Model(){Id=4,Name="dalta" },
+                new Model(){Id=5,Name="elice" },
+                new Model(){Id=6,Name="fotbal" },
             };
         }
         private async Task<List<Model>> GetInputData(Model reference) {
@@ -165,6 +220,10 @@ namespace DemoUIStateMachine {
 
         private async void cmbInput1_SelectedIndexChanged(object sender, EventArgs e) {
             await _machine.Fire(Trigger.ChangeInput1, CancellationToken.None);
+        }
+
+        private async void btnSearch_Click(object sender, EventArgs e) {
+            await _machine.Fire(Trigger.StartSearch, CancellationToken.None);
         }
     }
 }
