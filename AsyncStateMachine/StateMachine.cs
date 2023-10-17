@@ -115,7 +115,7 @@ namespace AsyncStateMachine {
         }
 
         private async Task<TTrigger?> EnterNewState(TTrigger trigger, TState newState, CancellationToken token) {
-            if (!_rules.TryGetValue(_currentState, out var stateController))
+            if (!_rules.TryGetValue(newState, out var stateController))
                 throw new MissingConfigurationException();
 
             var transition = new Transition<TTrigger, TState>(_currentState, trigger, newState);
@@ -153,6 +153,12 @@ namespace AsyncStateMachine {
         }
 
 
+        /// <summary>
+        /// Fires a trigger over the current state.
+        /// The machine can still be pumping after this call finishes.
+        /// </summary>
+        /// <param name="token">Used to cancel the trigger condition or state entry</param>
+        /// <returns>True if the trigger succesfully changed the current state.</returns>
         public async Task<bool> Fire(TTrigger trigger, CancellationToken token) {
             if (IsRunning())
                 return false;

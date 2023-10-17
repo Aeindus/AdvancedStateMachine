@@ -35,12 +35,6 @@ namespace TestStateMachine {
             config.Configure(State.Initial)
                 .Permit(Trigger.LoadData, State.Load);
 
-            config.Configure(State.Initial)
-                .OnEntryAsync(async (transition, token) => {
-                    return null;
-                })
-                .Permit(Trigger.LoadData, State.Load);
-
             var machine = config.Build();
 
             Assert.IsTrue(machine.IsInState(State.Initial));
@@ -55,9 +49,6 @@ namespace TestStateMachine {
                 .Permit(Trigger.LoadData, State.Load);
 
             config.Configure(State.Initial)
-                .OnEntryAsync(async (transition, token) => {
-                    return null;
-                })
                 .Permit(Trigger.LoadData, State.Load);
 
             var machine = config.Build();
@@ -68,6 +59,21 @@ namespace TestStateMachine {
 
         [TestMethod]
         public void One_State_Simple_Constructor() {
+            var config = new MachineConfiguration<Trigger, State>(State.Initial);
+
+            config.Configure(State.Initial)
+                .OnEntryAsync(async (transition, token) => {
+                    return null;
+                });
+
+            var machine = config.Build();
+
+            Assert.IsTrue(machine.IsInState(State.Initial));
+            Assert.IsFalse(machine.IsRunning());
+        }
+
+        [TestMethod]
+        public void One_State_And_Reconfiguration_Constructor() {
             var config = new MachineConfiguration<Trigger, State>(State.Initial);
 
             config.Configure(State.Initial)
@@ -97,20 +103,9 @@ namespace TestStateMachine {
                 });
 
             config.Configure(State.Load)
-              .OnEntryAsync(async (transition, token) => {
-                  return null;
-              });
-
-            config.Configure(State.Initial)
-              .OnEntryAsync(async (transition, token) => {
-                  return null;
-              });
-
-            config.Configure(State.Initial)
-              .OnEntryAsync(async (transition, token) => {
-                  return null;
-              })
-              .Permit(Trigger.LoadData, State.Load);
+                .OnEntryAsync(async (transition, token) => {
+                    return null;
+                });
 
             var machine = config.Build();
 

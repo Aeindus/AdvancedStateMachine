@@ -2,7 +2,7 @@ using AsyncStateMachine;
 
 namespace TestStateMachine {
     [TestClass]
-    public class UnitTest1 {
+    public class StaticMachineTest {
         private enum Trigger {
             LoadData
         }
